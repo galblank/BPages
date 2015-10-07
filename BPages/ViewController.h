@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BPages-Swift.h"
 
-@interface ViewController : UIViewController<UITableViewDelegate,UITableViewDataSource>
+@interface ViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,ItemDelegate>
 {
     UITableView * mainViewTable;
 }
 
+-(void)selectedItem:(NSMutableDictionary *)item;
 @end
 

@@ -8,10 +8,15 @@
 
 import UIKit
 
+@objc protocol ItemDelegate{
+    func selectedItem(item:NSMutableDictionary)
+}
 
 class ItemTableViewController: UITableViewController {
 
     var itemType:MENU_TYPES = MENU_COUNTRY
+    
+    var delegate:ItemDelegate?
     
     var listofItems: [AnyObject]!
     
@@ -56,9 +61,15 @@ class ItemTableViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        let row = indexPath.row
+        let item:NSMutableDictionary = listofItems[row] as! NSMutableDictionary
+        delegate?.selectedItem(item)
+        self.navigationController?.popViewControllerAnimated(true)
+
     }
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
+
        
         let row = indexPath.row
         let item:NSMutableDictionary = listofItems[row] as! NSMutableDictionary

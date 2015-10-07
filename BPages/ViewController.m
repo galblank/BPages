@@ -8,13 +8,18 @@
 
 #import "ViewController.h"
 #import "definitions.h"
-#import "BPages-Swift.h"
+
 
 @interface ViewController ()
 
 @end
 
 @implementation ViewController
+
+-(void)selectedItem:(NSMutableDictionary *)item
+{
+    
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -63,6 +68,8 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     ItemTableViewController * newItem = [[ItemTableViewController alloc] init];
+    newItem.delegate = self;
+    newItem.itemType = (MENU_TYPES)(indexPath.row);
     [self.navigationController pushViewController:newItem animated:YES];
 }
 
