@@ -22,8 +22,8 @@
 #define AwsBucketUrl     @"http://s3.amazonaws.com"
 
 
-#define ROOT_API @"http://galblank.com:8080/amberalertapi/"
-//#define ROOT_API    @"http://localhost:8080/amberalertapi/"
+#define ROOT_API @"http://www.backpage.com/online/api/"
+
 
 
 #define DEFAULT_TTL 15.0
@@ -39,6 +39,12 @@ typedef enum{
 }MENU_TYPES;
 
 #define ROOT_IMAGES @"http://www.missingkids.com/photographs/"
+
+typedef enum{
+    MENU_BUTTON_MENU = 0,
+    MENU_BUTTON_BACK
+}MENU_BUTTON_TYPE;
+
 
 typedef enum{
     ITEM_TYPE_COUNTRY = 0,

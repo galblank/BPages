@@ -16,6 +16,9 @@
 		091B5F4C1BC3427900A7F033 /* ItemTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F4B1BC3427900A7F033 /* ItemTableViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		091B5F4F1BC3F62700A7F033 /* XmlHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F4E1BC3F62700A7F033 /* XmlHandler.m */; settings = {ASSET_TAGS = (); }; };
 		091B5F511BC3FFA600A7F033 /* countries.txt in Resources */ = {isa = PBXBuildFile; fileRef = 091B5F501BC3FFA600A7F033 /* countries.txt */; settings = {ASSET_TAGS = (); }; };
+		091B5F531BC54D6000A7F033 /* bpages.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 091B5F521BC54D6000A7F033 /* bpages.sqlite */; settings = {ASSET_TAGS = (); }; };
+		091B5F551BC6A45300A7F033 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F541BC6A45300A7F033 /* MenuViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		091B5F591BC6E2C300A7F033 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F581BC6E2C300A7F033 /* StringExtension.swift */; settings = {ASSET_TAGS = (); }; };
 		09ECFD411BC31FEC00E87FBA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD401BC31FEC00E87FBA /* main.m */; };
 		09ECFD441BC31FEC00E87FBA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD431BC31FEC00E87FBA /* AppDelegate.m */; };
 		09ECFD471BC31FEC00E87FBA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD461BC31FEC00E87FBA /* ViewController.m */; };
@@ -97,6 +100,9 @@
 		091B5F4D1BC3F62700A7F033 /* XmlHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlHandler.h; sourceTree = "<group>"; };
 		091B5F4E1BC3F62700A7F033 /* XmlHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XmlHandler.m; sourceTree = "<group>"; };
 		091B5F501BC3FFA600A7F033 /* countries.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = countries.txt; sourceTree = SOURCE_ROOT; };
+		091B5F521BC54D6000A7F033 /* bpages.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = bpages.sqlite; sourceTree = SOURCE_ROOT; };
+		091B5F541BC6A45300A7F033 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		091B5F581BC6E2C300A7F033 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		09ECFD3C1BC31FEC00E87FBA /* BPages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BPages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ECFD401BC31FEC00E87FBA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		09ECFD421BC31FEC00E87FBA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -261,6 +267,7 @@
 		09ECFD3E1BC31FEC00E87FBA /* BPages */ = {
 			isa = PBXGroup;
 			children = (
+				091B5F4B1BC3427900A7F033 /* ItemTableViewController.swift */,
 				091B5F411BC33A7100A7F033 /* CallingCardView.h */,
 				091B5F421BC33A7100A7F033 /* CallingCardView.m */,
 				09ECFEA71BC3344900E87FBA /* definitions.h */,
@@ -269,11 +276,11 @@
 				09ECFD451BC31FEC00E87FBA /* ViewController.h */,
 				09ECFD461BC31FEC00E87FBA /* ViewController.m */,
 				09ECFD501BC31FEC00E87FBA /* Info.plist */,
-				09ECFD3F1BC31FEC00E87FBA /* Supporting Files */,
-				091B5F461BC33E2400A7F033 /* BPages-Bridging-Header.h */,
-				091B5F4B1BC3427900A7F033 /* ItemTableViewController.swift */,
 				091B5F4D1BC3F62700A7F033 /* XmlHandler.h */,
 				091B5F4E1BC3F62700A7F033 /* XmlHandler.m */,
+				09ECFD3F1BC31FEC00E87FBA /* Supporting Files */,
+				091B5F541BC6A45300A7F033 /* MenuViewController.swift */,
+				091B5F581BC6E2C300A7F033 /* StringExtension.swift */,
 			);
 			path = BPages;
 			sourceTree = "<group>";
@@ -281,6 +288,8 @@
 		09ECFD3F1BC31FEC00E87FBA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				091B5F461BC33E2400A7F033 /* BPages-Bridging-Header.h */,
+				091B5F521BC54D6000A7F033 /* bpages.sqlite */,
 				091B5F501BC3FFA600A7F033 /* countries.txt */,
 				09ECFD401BC31FEC00E87FBA /* main.m */,
 				091B5F3D1BC336C700A7F033 /* Media.xcassets */,
@@ -543,6 +552,7 @@
 				091B5F3E1BC336C700A7F033 /* Media.xcassets in Resources */,
 				091B5F511BC3FFA600A7F033 /* countries.txt in Resources */,
 				091B5F401BC3373300A7F033 /* Launch Screen.storyboard in Resources */,
+				091B5F531BC54D6000A7F033 /* bpages.sqlite in Resources */,
 				09ECFE7C1BC32E3D00E87FBA /* phone.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -572,6 +582,7 @@
 				09ECFE981BC32E3D00E87FBA /* ImageResizer.m in Sources */,
 				09ECFD471BC31FEC00E87FBA /* ViewController.m in Sources */,
 				09ECFEA51BC32E3D00E87FBA /* WYPopoverController.m in Sources */,
+				091B5F551BC6A45300A7F033 /* MenuViewController.swift in Sources */,
 				09ECFE941BC32E3D00E87FBA /* AFContact.m in Sources */,
 				09ECFE821BC32E3D00E87FBA /* AFSecurityPolicy.m in Sources */,
 				09ECFE8B1BC32E3D00E87FBA /* UIButton+AFNetworking.m in Sources */,
@@ -587,6 +598,7 @@
 				09ECFE9B1BC32E3D00E87FBA /* InsetUILabel.m in Sources */,
 				09ECFE831BC32E3D00E87FBA /* AFURLConnectionOperation.m in Sources */,
 				09ECFE7E1BC32E3D00E87FBA /* AFHTTPRequestOperation.m in Sources */,
+				091B5F591BC6E2C300A7F033 /* StringExtension.swift in Sources */,
 				09ECFE8E1BC32E3D00E87FBA /* UIRefreshControl+AFNetworking.m in Sources */,
 				09ECFE9C1BC32E3D00E87FBA /* NSData+Base64.m in Sources */,
 				09ECFEA31BC32E3D00E87FBA /* UIImage+RoundedCorner.m in Sources */,

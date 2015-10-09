@@ -12,8 +12,8 @@
 
 
 
-#define LOCAL_DB_FILE_NAME     @"amberalert"
-#define LOCAL_DB_FILE_EXT      @"db"
+#define LOCAL_DB_FILE_NAME     @"bpages"
+#define LOCAL_DB_FILE_EXT      @"sqlite"
 #define DB_BUNDLE_VERSION_KEY  @"kDB_BUNDLE_VERSION_KEY"
 #define DB_QUEUE_NAME          "com.galblank.app.dbqueue"
 

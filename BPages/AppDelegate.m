@@ -125,7 +125,7 @@ AppDelegate *shared = nil;
 
 -(void)shareThisApp
 {
-   
+    
 }
 -(void)contactDeveloper
 {
@@ -135,7 +135,7 @@ AppDelegate *shared = nil;
     }
     if ([MFMailComposeViewController canSendMail]) {
         [mailComp setToRecipients:@[@"galblank@gmail.com"]];
-        [mailComp setSubject:NSLocalizedString(@"Contact for MissingKids developer", nil)];
+        [mailComp setSubject:NSLocalizedString(@"Contact for BPages developer", nil)];
         [self.window.rootViewController presentViewController:mailComp animated:YES completion:nil];
     }
 }
@@ -147,8 +147,8 @@ AppDelegate *shared = nil;
     }
     
     if ([MFMailComposeViewController canSendMail]) {
-        [mailComp setSubject:NSLocalizedString(@"Missing Children and Amber Alerts App", nil)];
-        NSString *shareString = [NSString stringWithFormat:@"Download this app, it might help save someone https://itunes.apple.com/us/app/missingkids/id1041399210?ls=1&mt=8"];
+        [mailComp setSubject:NSLocalizedString(@"Free Backpage.com app", nil)];
+        NSString *shareString = [NSString stringWithFormat:@"Free Backpage app https://itunes.apple.com/us/app/missingkids/id1041399210?ls=1&mt=8"];
         [mailComp setMessageBody:shareString isHTML:YES];
         
         [self.window.rootViewController presentViewController:mailComp animated:YES completion:nil];
@@ -227,6 +227,33 @@ AppDelegate *shared = nil;
     [[self topViewController].navigationController popViewControllerAnimated:YES];
 }
 
+
+-(void)changeMenuButton
+{
+    switch (menuButton.tag) {
+        case MENU_BUTTON_MENU:
+        {
+            [menuButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+            [menuButton removeTarget:self action:@selector(populateMenu) forControlEvents:UIControlEventTouchUpInside];
+            [menuButton addTarget:self action:@selector(popTopViewController) forControlEvents:UIControlEventTouchUpInside];
+            menuButton.tag = MENU_BUTTON_BACK;
+            
+        }
+            break;
+        case MENU_BUTTON_BACK:
+        {
+            menuButton.tag = MENU_BUTTON_MENU;
+            [menuButton setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
+            [menuButton removeTarget:self action:@selector(popTopViewController) forControlEvents:UIControlEventTouchUpInside];
+            [menuButton addTarget:self action:@selector(populateMenu) forControlEvents:UIControlEventTouchUpInside];
+            
+        }
+        default:
+            break;
+    }
+}
+
+
 -(void)showMenuButton
 {
     if(menuButton == nil){
@@ -235,6 +262,7 @@ AppDelegate *shared = nil;
         menuButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
         menuButton.layer.borderWidth = 0.3;
         menuButton.alpha = 0.8;
+        menuButton.tag = MENU_BUTTON_MENU;
         [menuButton setBackgroundColor:[UIColor whiteColor]];
         [menuButton addTarget:self action:@selector(populateMenu) forControlEvents:UIControlEventTouchUpInside];
         menuButton.layer.cornerRadius = menuButton.frame.size.height / 2;
@@ -251,6 +279,26 @@ AppDelegate *shared = nil;
     }
 }
 
+
+-(void)populateMenu
+{
+    MenuViewController *menu = [[MenuViewController alloc] initWithStyle:UITableViewStylePlain];
+    if(popoverController == nil){
+        popoverController = [[WYPopoverController alloc] initWithContentViewController:menu]; //content view controller needs to be tableviewcontroller
+        [popoverController setTheme:[WYPopoverTheme themeForIOS7]];
+        popoverController.popoverContentSize = CGSizeMake(200, 120);
+        popoverController.delegate = self;
+    }
+    [popoverController presentPopoverFromRect:menuButton.bounds inView:menuButton permittedArrowDirections:WYPopoverArrowDirectionAny animated:YES];
+    
+}
+
+-(void)hideMenu
+{
+    if(popoverController){
+        [popoverController dismissPopoverAnimated:YES];
+    }
+}
 
 - (BOOL)popoverControllerShouldDismissPopover:(WYPopoverController *)controller
 {

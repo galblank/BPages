@@ -9,11 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "BPages-Swift.h"
 
-@interface ViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,ItemDelegate>
+@interface ViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,ItemDelegate,CommunicationManagerDelegate>
 {
     UITableView * mainViewTable;
+    NSMutableDictionary * tableData;
+    ItemTableViewController * newItemVC;
 }
 
--(void)selectedItem:(NSMutableDictionary *)item;
+-(void)selectedItem:(NSDictionary<NSString *,id> *)item menuItem:(MENU_TYPES)menuItem;
 @end
 

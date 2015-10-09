@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "definitions.h"
-
+#import "XmlHandler.h"
 
 @interface ViewController ()
 
@@ -16,13 +16,59 @@
 
 @implementation ViewController
 
--(void)selectedItem:(NSMutableDictionary *)item
+-(void)selectedItem:(NSDictionary<NSString *,id> *)item menuItem:(MENU_TYPES)menuItem
 {
-    
+    switch (menuItem) {
+        case MENU_COUNTRY:
+            [tableData setObject:item forKeyedSubscript:@"country"];
+            break;
+        case MENU_STATE:
+        {
+            [tableData setObject:item forKeyedSubscript:@"state"];
+            NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
+            NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
+            NSString * state = [[tableData objectForKeyedSubscript:@"state"] objectForKeyedSubscript:@"iso"];
+            NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
+            [params setObject:country forKeyedSubscript:@"CountryCode"];
+            [params setObject:state forKeyedSubscript:@"State"];
+            NSString * url = [NSString stringWithFormat:@"Site.xml?CountryCode=%@&State=%@",country,state];
+            [[CommManager sharedInstance] getAPI:url andParams:nil andDelegate:self];
+        }
+            break;
+        case MENU_CITY:
+            [tableData setObject:item forKeyedSubscript:@"city"];
+            break;
+        case MENU_CATEGORY:
+            [tableData setObject:item forKeyedSubscript:@"category"];
+            break;
+        case MENU_SECTION:
+            [tableData setObject:item forKeyedSubscript:@"section"];
+            break;
+        default:
+            break;
+    }
+    [mainViewTable reloadData];
+}
+
+-(void)getApiFinished:(NSMutableDictionary*)response
+{
+    NSXMLParser * parser = [response objectForKeyedSubscript:@"result"];
+    NSError * error;
+    NSMutableDictionary * document = [XmlHandler dictionaryNSXmlParseObject:parser error:error];
+    NSLog(@"%@",document);
+
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    tableData = [[NSMutableDictionary alloc] init];
+    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"country"];
+    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"state"];
+    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"city"];
+    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"category"];
+    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"section"];
+    
     mainViewTable = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
     mainViewTable.dataSource = self;
     mainViewTable.delegate = self;
@@ -67,10 +113,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    ItemTableViewController * newItem = [[ItemTableViewController alloc] init];
-    newItem.delegate = self;
-    newItem.itemType = (MENU_TYPES)(indexPath.row);
-    [self.navigationController pushViewController:newItem animated:YES];
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    if (cell.selectionStyle == UITableViewCellSelectionStyleNone) {
+        return;
+    }
+    
+    if(newItemVC == nil){
+        newItemVC = [[ItemTableViewController alloc] init];
+        newItemVC.delegate = self;
+    }
+    newItemVC.itemType = (MENU_TYPES)(indexPath.row);
+    [newItemVC updateItemsForMenuType];
+    [self.navigationController pushViewController:newItemVC animated:YES];
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath;
@@ -100,26 +154,65 @@
         [cell.detailTextLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Medium" size:16.0]];
     }
     
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    
     switch (indexPath.row) {
         case MENU_COUNTRY:
             cell.textLabel.text = NSLocalizedString(@"Country", nil);
-            cell.detailTextLabel.text = NSLocalizedString(@"None", nil);
+            if([[tableData objectForKeyedSubscript:@"country"] isKindOfClass:[NSString class]]){
+                cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"country"];
+                [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+            }
+            else{
+                NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"country"];
+                cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+            }
             break;
         case MENU_STATE:
             cell.textLabel.text = NSLocalizedString(@"State", nil);
-            cell.detailTextLabel.text = NSLocalizedString(@"None", nil);
+            if([[tableData objectForKeyedSubscript:@"state"] isKindOfClass:[NSString class]]){
+                cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"state"];
+                if([[tableData objectForKeyedSubscript:@"country"] isKindOfClass:[NSString class]] == NO){
+                   [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+                }
+            }
+            else{
+                NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"state"];
+                cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+            }
             break;
         case MENU_CITY:
             cell.textLabel.text = NSLocalizedString(@"City", nil);
-            cell.detailTextLabel.text = NSLocalizedString(@"None", nil);
+            if([[tableData objectForKeyedSubscript:@"city"] isKindOfClass:[NSString class]]){
+                cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"city"];
+                if([[tableData objectForKeyedSubscript:@"state"] isKindOfClass:[NSString class]] == NO){
+                    [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+                }
+            }
+            else{
+                NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"city"];
+                cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+            }
             break;
         case MENU_SECTION:
             cell.textLabel.text = NSLocalizedString(@"Section", nil);
-            cell.detailTextLabel.text = NSLocalizedString(@"None", nil);
+            if([[tableData objectForKeyedSubscript:@"section"] isKindOfClass:[NSString class]]){
+                cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"section"];
+            }
+            else{
+                NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"section"];
+                cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+            }
             break;
         case MENU_CATEGORY:
             cell.textLabel.text = NSLocalizedString(@"Category", nil);
-            cell.detailTextLabel.text = NSLocalizedString(@"None", nil);
+            if([[tableData objectForKeyedSubscript:@"category"] isKindOfClass:[NSString class]]){
+                cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"category"];
+            }
+            else{
+                NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"category"];
+                cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+            }
             break;
         default:
         

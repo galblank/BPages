@@ -16,7 +16,7 @@
 
 
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate,WYPopoverControllerDelegate,ABContactsDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,WYPopoverControllerDelegate,ABContactsDelegate,CLLocationManagerDelegate>
 {
     CLLocationManager *locationManager;
     CLLocation* location;
@@ -34,7 +34,7 @@
 @property (strong, nonatomic) NSString *gotoCaseID;
 + (AppDelegate*)shared;
 
-
+-(void)changeMenuButton;
 -(void)showMenuButton;
 -(void)hideMenuButton;
 

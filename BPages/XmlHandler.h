@@ -17,5 +17,6 @@
 
 + (NSDictionary *)dictionaryForXMLData:(NSData *)data error:(NSError *)errorPointer;
 + (NSDictionary *)dictionaryForXMLString:(NSString *)string error:(NSError *)errorPointer;
++ (NSDictionary *)dictionaryNSXmlParseObject:(NSXMLParser *)parserObject error:(NSError *)errorPointer;
 
 @end

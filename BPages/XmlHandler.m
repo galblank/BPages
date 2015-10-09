@@ -37,6 +37,13 @@ NSString *const kXMLReaderTextNodeKey = @"text";
     return [XmlHandler dictionaryForXMLData:data error:error];
 }
 
++ (NSDictionary *)dictionaryNSXmlParseObject:(NSXMLParser *)parserObject error:(NSError *)errorPointer
+{
+    XmlHandler *reader = [[XmlHandler alloc] initWithError:errorPointer];
+    return [reader objectWithParser:parserObject];
+}
+
+
 #pragma mark -
 #pragma mark Parsing
 
@@ -49,6 +56,27 @@ NSString *const kXMLReaderTextNodeKey = @"text";
     return self;
 }
 
+- (NSDictionary *)objectWithParser:(NSXMLParser*)parserObject
+{
+    
+    dictionaryStack = [[NSMutableArray alloc] init];
+    textInProgress = [[NSMutableString alloc] init];
+    
+    // Initialize the stack with a fresh dictionary
+    [dictionaryStack addObject:[NSMutableDictionary dictionary]];
+    
+    parserObject.delegate = self;
+    BOOL success = [parserObject parse];
+    
+    // Return the stack's root dictionary on success
+    if (success)
+    {
+        NSDictionary *resultDict = [dictionaryStack objectAtIndex:0];
+        return resultDict;
+    }
+    
+    return nil;
+}
 
 - (NSDictionary *)objectWithData:(NSData *)data
 {

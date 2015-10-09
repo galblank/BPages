@@ -9,7 +9,7 @@
 import UIKit
 
 @objc protocol ItemDelegate{
-    func selectedItem(item:NSMutableDictionary)
+    func selectedItem(item:[String:AnyObject],menuItem:MENU_TYPES)
 }
 
 class ItemTableViewController: UITableViewController {
@@ -19,11 +19,37 @@ class ItemTableViewController: UITableViewController {
     var delegate:ItemDelegate?
     
     var listofItems: [AnyObject]!
+
+    var sortedKeys =  Dictionary<String, [AnyObject]>()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        AppDelegate.shared().changeMenuButton();
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
-        if(itemType == MENU_COUNTRY){
+        
+        
+    }
+    
+    func updateItemsForMenuType()
+    {
+        if(listofItems != nil){
+            listofItems.removeAll()
+        }
+        
+        if(sortedKeys.count > 0){
+            sortedKeys.removeAll()
+        }
+        
+        if(itemType == MENU_STATE){
+            let states = DBManager.sharedInstance().loadDataFromDB("select * from states") as NSMutableArray
+            listofItems = [NSMutableArray]()
+            for oneState in states{
+                let  mutabDic = ["name":oneState.objectAtIndex(1),"iso":oneState.objectAtIndex(2)]
+                listofItems.append(mutabDic)
+            }
+        }
+        else if(itemType == MENU_COUNTRY){
             guard let path = NSBundle.mainBundle().pathForResource("countries", ofType: "txt") else {
                 return
             }
@@ -34,12 +60,26 @@ class ItemTableViewController: UITableViewController {
                 
                 listofItems = try NSJSONSerialization.JSONObjectWithData(jsonData, options: NSJSONReadingOptions.MutableContainers) as! [AnyObject]
                 
-                print(listofItems)
-
+                
             } catch _ as NSError {
                 
             }
         }
+        
+        
+        for item:AnyObject in listofItems{
+            let cName:String = item.objectForKey("name") as! String
+            let firstLetter:String = cName[0]
+            
+            var countries:[AnyObject] = [AnyObject]()
+            if(sortedKeys[firstLetter] != nil){
+                countries = sortedKeys[firstLetter]!
+            }
+            countries.append(item)
+            sortedKeys[firstLetter] = countries
+        }
+        
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -51,29 +91,45 @@ class ItemTableViewController: UITableViewController {
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return sortedKeys.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return listofItems.count
+        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+        let oneKey = sortedNames[section]
+        
+        let items = sortedKeys[oneKey] as AnyObject?
+        return items!.count
+    }
+    
+    override func sectionIndexTitlesForTableView(tableView: UITableView) -> [String]? {
+        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+        return sortedNames
     }
 
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        let row = indexPath.row
-        let item:NSMutableDictionary = listofItems[row] as! NSMutableDictionary
-        delegate?.selectedItem(item)
+        
+        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+        let oneKey = sortedNames[indexPath.section]
+        let items = sortedKeys[oneKey] as Array!
+        let item = items[indexPath.row]
+        delegate?.selectedItem(item as! [String : AnyObject], menuItem: itemType)
         self.navigationController?.popViewControllerAnimated(true)
-
     }
+    
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
 
-       
-        let row = indexPath.row
-        let item:NSMutableDictionary = listofItems[row] as! NSMutableDictionary
-        cell.textLabel?.text = item.objectForKey("name") as? String
+        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+        let oneKey = sortedNames[indexPath.section]
+        
+        let items = sortedKeys[oneKey] as Array!
+        let row:Int = indexPath.row
+        let item = items[indexPath.row]
+        cell.textLabel?.text = item.objectForKey("name") as! String
         
         return cell
     }
