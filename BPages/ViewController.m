@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "definitions.h"
 #import "XmlHandler.h"
+#import "StringHelper.h"
 
 @interface ViewController ()
 
@@ -21,6 +22,39 @@
     switch (menuItem) {
         case MENU_COUNTRY:
             [tableData setObject:item forKeyedSubscript:@"country"];
+        {
+            NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
+            NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
+            NSString * url = [NSString stringWithFormat:@"Site.xml?CountryCode=%@",country];
+            [[CommManager sharedInstance] getAPIBlock:url andParams:nil completion:^(NSMutableDictionary * result) {
+                NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
+                NSError * error;
+                NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
+                NSMutableArray * cities = [[[document objectForKeyedSubscript:@"rss"] objectForKey:@"channel"] objectForKey:@"item"];
+                for(NSMutableDictionary * oneCity in cities){
+                    NSString * name = [[[oneCity objectForKeyedSubscript:@"bp:City"] objectForKey:@"bp:City"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * url = [[[oneCity objectForKeyedSubscript:@"bp:BackpageURL"] objectForKey:@"bp:BackpageURL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * country = [[[oneCity objectForKeyedSubscript:@"bp:Country"] objectForKey:@"bp:Country"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * countrycode = [[[oneCity objectForKeyedSubscript:@"bp:CountryCode"] objectForKey:@"bp:CountryCode"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * bpid = [[[oneCity objectForKeyedSubscript:@"bp:Id"] objectForKey:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * latitude = [[[oneCity objectForKeyedSubscript:@"bp:Latitude"] objectForKey:@"bp:Latitude"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * longitude = [[[oneCity objectForKeyedSubscript:@"bp:Longitude"] objectForKey:@"bp:Longitude"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * parent = [[[oneCity objectForKeyedSubscript:@"bp:Parent"] objectForKey:@"bp:Parent"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * postingurl = [[[oneCity objectForKeyedSubscript:@"bp:PostingURL"] objectForKey:@"bp:PostingURL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * statecode = [[[oneCity objectForKeyedSubscript:@"bp:State"] objectForKey:@"bp:State"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * statename = [[[oneCity objectForKeyedSubscript:@"bp:StateFull"] objectForKey:@"bp:StateFull"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    
+                    NSString * query = [NSString stringWithFormat:@"select * from cities where url = '%@'",[url urlEncode]];
+                    NSArray * city = [[DBManager sharedInstance] loadDataFromDB:query];
+                    if(city && city.count > 0){
+                        continue;
+                    }
+                    query = [NSString stringWithFormat:@"insert into cities values(%@,'%@','%@','%@','%@','%@',%f,%f,'%@','%@','%@','%@')",nil,[name urlEncode],[url urlEncode],[country urlEncode],[countrycode urlEncode],[bpid urlEncode],latitude.doubleValue,longitude.doubleValue,[parent urlEncode],[postingurl urlEncode],statecode,[statename urlEncode]];
+                    [[DBManager sharedInstance] executeQuery:query];
+                }
+            }];
+
+        }
             break;
         case MENU_STATE:
         {
@@ -28,11 +62,34 @@
             NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
             NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
             NSString * state = [[tableData objectForKeyedSubscript:@"state"] objectForKeyedSubscript:@"iso"];
-            NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
-            [params setObject:country forKeyedSubscript:@"CountryCode"];
-            [params setObject:state forKeyedSubscript:@"State"];
             NSString * url = [NSString stringWithFormat:@"Site.xml?CountryCode=%@&State=%@",country,state];
-            [[CommManager sharedInstance] getAPI:url andParams:nil andDelegate:self];
+            [[CommManager sharedInstance] getAPIBlock:url andParams:nil completion:^(NSMutableDictionary * result) {
+                NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
+                NSError * error;
+                NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
+                NSMutableArray * cities = [document objectForKeyedSubscript:@"item"];
+                for(NSMutableDictionary * oneCity in cities){
+                    NSString * name = [[oneCity objectForKeyedSubscript:@"bp:City"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * url = [[oneCity objectForKeyedSubscript:@"bp:BackpageURL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * country = [[oneCity objectForKeyedSubscript:@"bp:Country"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * countrycode = [[oneCity objectForKeyedSubscript:@"bp:CountryCode"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * bpid = [[oneCity objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * latitude = [[oneCity objectForKeyedSubscript:@"bp:Latitude"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * longitude = [[oneCity objectForKeyedSubscript:@"bp:Longitude"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * parent = [[oneCity objectForKeyedSubscript:@"bp:Parent"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * postingurl = [[oneCity objectForKeyedSubscript:@"bp:PostingURL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * statecode = [[oneCity objectForKeyedSubscript:@"bp:State"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * statename = [[oneCity objectForKeyedSubscript:@"bp:StateFull"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    
+                    NSString * query = [NSString stringWithFormat:@"select * from cities where url = '%@'",url];
+                    NSArray * city = [[DBManager sharedInstance] loadDataFromDB:query];
+                    if(city && city.count > 0){
+                        continue;
+                    }
+                    query = [NSString stringWithFormat:@"insert into cities values(%@,'%@','%@','%@','%@','%@',%f,%f,'%@','%@','%@','%@',)",nil,[name urlEncode],[url urlEncode],[country urlEncode],[countrycode urlEncode],[bpid urlEncode],latitude.doubleValue,longitude.doubleValue,[parent urlEncode],[postingurl urlEncode],statecode,[statename urlEncode]];
+                    [[DBManager sharedInstance] executeQuery:query];
+                }
+            }];
         }
             break;
         case MENU_CITY:
@@ -50,14 +107,6 @@
     [mainViewTable reloadData];
 }
 
--(void)getApiFinished:(NSMutableDictionary*)response
-{
-    NSXMLParser * parser = [response objectForKeyedSubscript:@"result"];
-    NSError * error;
-    NSMutableDictionary * document = [XmlHandler dictionaryNSXmlParseObject:parser error:error];
-    NSLog(@"%@",document);
-
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];

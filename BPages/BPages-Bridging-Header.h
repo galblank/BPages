@@ -6,3 +6,4 @@
 #import "CommManager.h"
 #import "DBManager.h"
 #import "AppDelegate.h"
+#import "StringHelper.h"

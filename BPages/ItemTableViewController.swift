@@ -65,7 +65,18 @@ class ItemTableViewController: UITableViewController {
                 
             }
         }
-        
+        else if(itemType == MENU_CITY){
+            listofItems = [NSMutableArray]()
+            let cities = DBManager.sharedInstance().loadDataFromDB("select * from cities")
+            for city in cities{
+                var cname = city[1] as! String
+                var curl = city[2] as! String
+                cname = cname.urlDecode()
+                curl = curl.urlDecode()
+                let dicCity = ["name":cname,"url":curl]
+                listofItems.append(dicCity)
+            }
+        }
         
         for item:AnyObject in listofItems{
             let cName:String = item.objectForKey("name") as! String
@@ -127,7 +138,6 @@ class ItemTableViewController: UITableViewController {
         let oneKey = sortedNames[indexPath.section]
         
         let items = sortedKeys[oneKey] as Array!
-        let row:Int = indexPath.row
         let item = items[indexPath.row]
         cell.textLabel?.text = item.objectForKey("name") as! String
         

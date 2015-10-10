@@ -53,6 +53,26 @@ static CommManager *sharedSampleSingletonDelegate = nil;
     return self;
 }
 
+- (void)getAPIBlock:(NSString *)api andParams:(NSMutableDictionary*)params completion:(void(^)(NSMutableDictionary*))callback
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFXMLParserResponseSerializer new];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/rss+xml",nil];
+    
+    NSString *fullAPI = [NSString stringWithFormat:@"%@%@",ROOT_API,api];
+    NSLog(@"GET: %@%@",fullAPI,params);
+    [manager GET:fullAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"RESPONSE: %@", responseObject);
+        NSMutableDictionary * result = [[NSMutableDictionary alloc] init];
+        [result setObject:responseObject forKeyedSubscript:@"result"];
+        callback(result);
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+    }];
+}
+
+
 -(void)getAPI:(NSString*)api andParams:(NSMutableDictionary*)params andDelegate:(id)delegate{
     CommDelegate = delegate;
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
