@@ -23,6 +23,7 @@
 
 @implementation AppDelegate
 
+@synthesize currentSelectionDic;
 
 AppDelegate *shared = nil;
 
@@ -53,6 +54,7 @@ AppDelegate *shared = nil;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     [self showMenuButton];
+    self.currentSelectionDic = [[NSMutableDictionary alloc] init];
     return YES;
 }
 

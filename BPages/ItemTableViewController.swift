@@ -67,12 +67,12 @@ class ItemTableViewController: UITableViewController {
         }
         else if(itemType == MENU_CITY){
             listofItems = [NSMutableArray]()
-            let cities = DBManager.sharedInstance().loadDataFromDB("select * from cities")
+            let query:String = String(format: "select * from cities where statecode = '%@'",AppDelegate.shared().currentSelectionDic.objectForKey("state") as! String)
+            
+            let cities = DBManager.sharedInstance().loadDataFromDB(query)
             for city in cities{
-                var cname = city[1] as! String
-                var curl = city[2] as! String
-                cname = cname.urlDecode()
-                curl = curl.urlDecode()
+                let cname = (city[1] as! String).urlDecode() as String
+                let curl = (city[2] as! String).urlDecode() as String
                 let dicCity = ["name":cname,"url":curl]
                 listofItems.append(dicCity)
             }

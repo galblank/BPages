@@ -53,13 +53,13 @@ static CommManager *sharedSampleSingletonDelegate = nil;
     return self;
 }
 
-- (void)getAPIBlock:(NSString *)api andParams:(NSMutableDictionary*)params completion:(void(^)(NSMutableDictionary*))callback
+- (void)getAPIBlockWithPrefix:(NSString*)prefix andApi:(NSString *)api andParams:(NSMutableDictionary*)params completion:(void(^)(NSMutableDictionary*))callback
 {
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFXMLParserResponseSerializer new];
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/rss+xml",nil];
     
-    NSString *fullAPI = [NSString stringWithFormat:@"%@%@",ROOT_API,api];
+    NSString *fullAPI = [NSString stringWithFormat:@"%@%@%@",prefix,API_SUFFIX,api];
     NSLog(@"GET: %@%@",fullAPI,params);
     [manager GET:fullAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"RESPONSE: %@", responseObject);

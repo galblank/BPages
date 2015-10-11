@@ -39,7 +39,7 @@
 @property (nonatomic, unsafe_unretained) id<CommunicationManagerDelegate> CommDelegate;
 
 -(void)postAPI:(NSString*)api andParams:(NSMutableDictionary*)params;
-- (void)getAPIBlock:(NSString *)api andParams:(NSMutableDictionary*)params completion:(void(^)(NSMutableDictionary*))callback;
+- (void)getAPIBlockWithPrefix:(NSString*)prefix andApi:(NSString *)api andParams:(NSMutableDictionary*)params completion:(void(^)(NSMutableDictionary*))callback;
 -(void)getAPI:(NSString*)api andParams:(NSMutableDictionary*)params andDelegate:(id)delegate;
 -(void)uploadImage:(NSURL *)imageUrl andAssetName:(NSString*)assetName andAssetSize:(NSNumber*)assetSize withDelegate:(id)theDelegate;
 -(void)downloadAssetFromS3WithName:(NSString*)name andSavingUrl:(NSURL*)savingUrl withDelegate:(id)theDelegate;

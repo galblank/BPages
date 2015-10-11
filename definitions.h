@@ -22,8 +22,8 @@
 #define AwsBucketUrl     @"http://s3.amazonaws.com"
 
 
-#define ROOT_API @"http://www.backpage.com/online/api/"
-
+#define ROOT_API    @"http://www.backpage.com"
+#define API_SUFFIX  @"/online/api/"
 
 
 #define DEFAULT_TTL 15.0

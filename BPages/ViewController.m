@@ -25,8 +25,11 @@
         {
             NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
             NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
-            NSString * url = [NSString stringWithFormat:@"Site.xml?CountryCode=%@",country];
-            [[CommManager sharedInstance] getAPIBlock:url andParams:nil completion:^(NSMutableDictionary * result) {
+            [[AppDelegate shared].currentSelectionDic setObject:country forKeyedSubscript:@"country"];
+            [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
+            
+            NSString * api = [NSString stringWithFormat:@"Site.xml?CountryCode=%@",country];
+            [[CommManager sharedInstance] getAPIBlockWithPrefix:ROOT_API andApi:api andParams:nil completion:^(NSMutableDictionary * result) {
                 NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
                 NSError * error;
                 NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
@@ -58,42 +61,45 @@
             break;
         case MENU_STATE:
         {
+            NSString * state = [item objectForKeyedSubscript:@"iso"];
+            [[AppDelegate shared].currentSelectionDic setObject:state forKeyedSubscript:@"state"];
+            [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
             [tableData setObject:item forKeyedSubscript:@"state"];
-            NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
-            NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
-            NSString * state = [[tableData objectForKeyedSubscript:@"state"] objectForKeyedSubscript:@"iso"];
-            NSString * url = [NSString stringWithFormat:@"Site.xml?CountryCode=%@&State=%@",country,state];
-            [[CommManager sharedInstance] getAPIBlock:url andParams:nil completion:^(NSMutableDictionary * result) {
-                NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
-                NSError * error;
-                NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
-                NSMutableArray * cities = [document objectForKeyedSubscript:@"item"];
-                for(NSMutableDictionary * oneCity in cities){
-                    NSString * name = [[oneCity objectForKeyedSubscript:@"bp:City"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * url = [[oneCity objectForKeyedSubscript:@"bp:BackpageURL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * country = [[oneCity objectForKeyedSubscript:@"bp:Country"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * countrycode = [[oneCity objectForKeyedSubscript:@"bp:CountryCode"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * bpid = [[oneCity objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * latitude = [[oneCity objectForKeyedSubscript:@"bp:Latitude"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * longitude = [[oneCity objectForKeyedSubscript:@"bp:Longitude"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * parent = [[oneCity objectForKeyedSubscript:@"bp:Parent"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * postingurl = [[oneCity objectForKeyedSubscript:@"bp:PostingURL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * statecode = [[oneCity objectForKeyedSubscript:@"bp:State"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * statename = [[oneCity objectForKeyedSubscript:@"bp:StateFull"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    
-                    NSString * query = [NSString stringWithFormat:@"select * from cities where url = '%@'",url];
-                    NSArray * city = [[DBManager sharedInstance] loadDataFromDB:query];
-                    if(city && city.count > 0){
-                        continue;
-                    }
-                    query = [NSString stringWithFormat:@"insert into cities values(%@,'%@','%@','%@','%@','%@',%f,%f,'%@','%@','%@','%@',)",nil,[name urlEncode],[url urlEncode],[country urlEncode],[countrycode urlEncode],[bpid urlEncode],latitude.doubleValue,longitude.doubleValue,[parent urlEncode],[postingurl urlEncode],statecode,[statename urlEncode]];
-                    [[DBManager sharedInstance] executeQuery:query];
-                }
-            }];
         }
             break;
         case MENU_CITY:
+        {
             [tableData setObject:item forKeyedSubscript:@"city"];
+            [[AppDelegate shared].currentSelectionDic setObject:[item objectForKeyedSubscript:@"name"] forKeyedSubscript:@"city"];
+            [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
+            //http://losangeles.backpage.com/online/api/Section.xml
+            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
+            NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
+            [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:@"Section.xml" andParams:nil completion:^(NSMutableDictionary * result) {
+                NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
+                NSError * error;
+                NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
+                NSMutableArray * caegories = [[[document objectForKeyedSubscript:@"rss"] objectForKey:@"channel"] objectForKey:@"item"];
+                for(NSMutableDictionary * oneCategory in caegories){
+                    NSLog(@"%@",oneCategory);
+                    NSString * catId = [[[oneCategory objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catName = [[[oneCategory objectForKeyedSubscript:@"bp:Name"] objectForKeyedSubscript:@"bp:Name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catPosition = [[[oneCategory objectForKeyedSubscript:@"bp:Position"] objectForKeyedSubscript:@"bp:Position"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catsectionKey = [[[oneCategory objectForKeyedSubscript:@"bp:SectionKey"] objectForKeyedSubscript:@"bp:SectionKey"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catsectionShortName = [[[oneCategory objectForKeyedSubscript:@"bp:ShortName"] objectForKeyedSubscript:@"bp:ShortName"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catsectionUrl = [[[oneCategory objectForKeyedSubscript:@"bp:URL"] objectForKeyedSubscript:@"bp:URL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    
+                    NSString * query = [NSString stringWithFormat:@"select * from category where catid = '%@'",catId];
+                    NSArray * cat = [[DBManager sharedInstance] loadDataFromDB:query];
+                    if(cat && cat.count > 0){
+                        continue;
+                    }
+                    query = [NSString stringWithFormat:@"insert into category values(%@,'%@','%@','%@','%@','%@','%@')",nil,[catId urlEncode],[catName urlEncode],[catPosition urlEncode],[catsectionKey urlEncode],[catsectionShortName urlEncode],[catsectionUrl urlEncode]];
+                    [[DBManager sharedInstance] executeQuery:query];
+                    
+                }
+            }];
+    }
             break;
         case MENU_CATEGORY:
             [tableData setObject:item forKeyedSubscript:@"category"];
@@ -112,11 +118,42 @@
     [super viewDidLoad];
     
     tableData = [[NSMutableDictionary alloc] init];
-    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"country"];
-    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"state"];
-    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"city"];
-    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"category"];
-    [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"section"];
+    if([[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"country"]){
+        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"country"] forKeyedSubscript:@"country"];
+    }
+    else{
+        [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"country"];
+    }
+    
+    if([[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"state"]){
+        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"state"] forKeyedSubscript:@"state"];
+    }
+    else{
+        [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"state"];
+    }
+    
+    if([[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"city"]){
+        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"city"] forKeyedSubscript:@"city"];
+    }
+    else{
+        [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"city"];
+    }
+    
+    if([[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"category"]){
+        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"category"] forKeyedSubscript:@"category"];
+    }
+    else{
+        [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"category"];
+    }
+    
+    
+    
+    if([[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"section"]){
+        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:@"section"] forKeyedSubscript:@"section"];
+    }
+    else{
+        [tableData setObject:NSLocalizedString(@"None", nil) forKeyedSubscript:@"section"];
+    }
     
     mainViewTable = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
     mainViewTable.dataSource = self;
@@ -208,9 +245,9 @@
     switch (indexPath.row) {
         case MENU_COUNTRY:
             cell.textLabel.text = NSLocalizedString(@"Country", nil);
+            [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
             if([[tableData objectForKeyedSubscript:@"country"] isKindOfClass:[NSString class]]){
                 cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"country"];
-                [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
             }
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"country"];
@@ -228,6 +265,7 @@
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"state"];
                 cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+                [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
             }
             break;
         case MENU_CITY:
@@ -241,6 +279,7 @@
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"city"];
                 cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+                [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
             }
             break;
         case MENU_SECTION:
@@ -251,6 +290,7 @@
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"section"];
                 cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+                [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
             }
             break;
         case MENU_CATEGORY:
@@ -261,6 +301,7 @@
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"category"];
                 cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
+                [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
             }
             break;
         default:

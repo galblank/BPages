@@ -32,6 +32,7 @@
 }
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) NSString *gotoCaseID;
+@property (strong, nonatomic) NSMutableDictionary * currentSelectionDic;
 + (AppDelegate*)shared;
 
 -(void)changeMenuButton;
