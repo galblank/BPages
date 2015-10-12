@@ -77,7 +77,29 @@ class ItemTableViewController: UITableViewController {
                 listofItems.append(dicCity)
             }
         }
-        
+        else if(itemType == MENU_SECTION)
+        {
+            let sections = DBManager.sharedInstance().loadDataFromDB("select * from section") as NSMutableArray
+            listofItems = [NSMutableArray]()
+            for section in sections{
+                let sectionId = (section[1] as! String).urlDecode() as String
+                let sectionName = (section[2] as! String).urlDecode() as String
+                let dicSection = ["name":sectionName,"sectionId":sectionId]
+                listofItems.append(dicSection)
+            }
+        }
+        else if(itemType == MENU_CATEGORY)
+        {
+            let query:String = String(format: "select * from category where sectionId = '%@'",AppDelegate.shared().currentSelectionDic.objectForKey("sectionId") as! String)
+            let sections = DBManager.sharedInstance().loadDataFromDB(query) as NSMutableArray
+            listofItems = [NSMutableArray]()
+            for section in sections{
+                let catId = (section[1] as! String).urlDecode() as String
+                let catName = (section[2] as! String).urlDecode() as String
+                let dicSection = ["name":catName,"catId":catId]
+                listofItems.append(dicSection)
+            }
+        }
         for item:AnyObject in listofItems{
             let cName:String = item.objectForKey("name") as! String
             let firstLetter:String = cName[0]

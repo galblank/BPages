@@ -25,8 +25,6 @@
         {
             NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
             NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
-            [[AppDelegate shared].currentSelectionDic setObject:country forKeyedSubscript:@"country"];
-            [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
             
             NSString * api = [NSString stringWithFormat:@"Site.xml?CountryCode=%@",country];
             [[CommManager sharedInstance] getAPIBlockWithPrefix:ROOT_API andApi:api andParams:nil completion:^(NSMutableDictionary * result) {
@@ -62,16 +60,12 @@
         case MENU_STATE:
         {
             NSString * state = [item objectForKeyedSubscript:@"iso"];
-            [[AppDelegate shared].currentSelectionDic setObject:state forKeyedSubscript:@"state"];
-            [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
             [tableData setObject:item forKeyedSubscript:@"state"];
         }
             break;
         case MENU_CITY:
         {
             [tableData setObject:item forKeyedSubscript:@"city"];
-            [[AppDelegate shared].currentSelectionDic setObject:[item objectForKeyedSubscript:@"name"] forKeyedSubscript:@"city"];
-            [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
             //http://losangeles.backpage.com/online/api/Section.xml
             NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
             NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
@@ -80,36 +74,105 @@
                 NSError * error;
                 NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
                 NSMutableArray * caegories = [[[document objectForKeyedSubscript:@"rss"] objectForKey:@"channel"] objectForKey:@"item"];
-                for(NSMutableDictionary * oneCategory in caegories){
-                    NSLog(@"%@",oneCategory);
-                    NSString * catId = [[[oneCategory objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * catName = [[[oneCategory objectForKeyedSubscript:@"bp:Name"] objectForKeyedSubscript:@"bp:Name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * catPosition = [[[oneCategory objectForKeyedSubscript:@"bp:Position"] objectForKeyedSubscript:@"bp:Position"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * catsectionKey = [[[oneCategory objectForKeyedSubscript:@"bp:SectionKey"] objectForKeyedSubscript:@"bp:SectionKey"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * catsectionShortName = [[[oneCategory objectForKeyedSubscript:@"bp:ShortName"] objectForKeyedSubscript:@"bp:ShortName"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                    NSString * catsectionUrl = [[[oneCategory objectForKeyedSubscript:@"bp:URL"] objectForKeyedSubscript:@"bp:URL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                for(NSMutableDictionary * Section in caegories){
+                    NSString * SectionId = [[[Section objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * SectionName = [[[Section objectForKeyedSubscript:@"bp:Name"] objectForKeyedSubscript:@"bp:Name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * SectionPosition = [[[Section objectForKeyedSubscript:@"bp:Position"] objectForKeyedSubscript:@"bp:Position"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionKey = [[[Section objectForKeyedSubscript:@"bp:SectionKey"] objectForKeyedSubscript:@"bp:SectionKey"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionShortName = [[[Section objectForKeyedSubscript:@"bp:ShortName"] objectForKeyedSubscript:@"bp:ShortName"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionUrl = [[[Section objectForKeyedSubscript:@"bp:URL"] objectForKeyedSubscript:@"bp:URL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                     
-                    NSString * query = [NSString stringWithFormat:@"select * from category where catid = '%@'",catId];
+                    NSString * query = [NSString stringWithFormat:@"select * from section where sectionid = '%@'",SectionId];
                     NSArray * cat = [[DBManager sharedInstance] loadDataFromDB:query];
                     if(cat && cat.count > 0){
                         continue;
                     }
-                    query = [NSString stringWithFormat:@"insert into category values(%@,'%@','%@','%@','%@','%@','%@')",nil,[catId urlEncode],[catName urlEncode],[catPosition urlEncode],[catsectionKey urlEncode],[catsectionShortName urlEncode],[catsectionUrl urlEncode]];
+                    query = [NSString stringWithFormat:@"insert into section values(%@,'%@','%@','%@','%@','%@','%@')",nil,[SectionId urlEncode],[SectionName urlEncode],[SectionPosition urlEncode],[sectionKey urlEncode],[sectionShortName urlEncode],[sectionUrl urlEncode]];
                     [[DBManager sharedInstance] executeQuery:query];
                     
                 }
             }];
     }
             break;
-        case MENU_CATEGORY:
-            [tableData setObject:item forKeyedSubscript:@"category"];
-            break;
         case MENU_SECTION:
+        {
             [tableData setObject:item forKeyedSubscript:@"section"];
+            
+            
+            //http://losangeles.backpage.com/online/api/Section.xml
+            NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:@"section"];
+            NSString * sectionId = [sectionDic objectForKeyedSubscript:@"sectionId"];
+            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
+            NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
+            NSString * api = [NSString stringWithFormat:@"Category.xml?Section=%@",sectionId];
+            [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:api andParams:nil completion:^(NSMutableDictionary * result) {
+                NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
+                NSError * error;
+                NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
+                NSMutableArray * categories = [[[document objectForKeyedSubscript:@"rss"] objectForKey:@"channel"] objectForKey:@"item"];
+                for(NSMutableDictionary * category in categories){
+                    NSLog(@"%@",category);
+                    NSString * catId = [[[category objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catName = [[[category objectForKeyedSubscript:@"bp:Name"] objectForKeyedSubscript:@"bp:Name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catPosition = [[[category objectForKeyedSubscript:@"bp:Position"] objectForKeyedSubscript:@"bp:Position"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionId = [[[category objectForKeyedSubscript:@"bp:Section"] objectForKeyedSubscript:@"bp:Section"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionName = [[[category objectForKeyedSubscript:@"SectionName"] objectForKeyedSubscript:@"SectionName"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catShortName = [[[category objectForKeyedSubscript:@"bp:ShortName"] objectForKeyedSubscript:@"bp:ShortName"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * catUrl = [[[category objectForKeyedSubscript:@"bp:URL"] objectForKeyedSubscript:@"bp:URL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    
+                    NSString * query = [NSString stringWithFormat:@"select * from category where catId = '%@'",catId];
+                    NSArray * cat = [[DBManager sharedInstance] loadDataFromDB:query];
+                    if(cat && cat.count > 0){
+                        continue;
+                    }
+                    query = [NSString stringWithFormat:@"insert into category values(%@,'%@','%@','%@','%@','%@','%@','%@')",nil,[catId urlEncode],[catName urlEncode],[catPosition urlEncode],[sectionId urlEncode],[sectionName urlEncode],[catShortName urlEncode],[catUrl urlEncode]];
+                    [[DBManager sharedInstance] executeQuery:query];
+                }
+            }];
+        }
+            break;
+        case MENU_CATEGORY:
+        {
+            [tableData setObject:item forKeyedSubscript:@"category"];
+            //http://losangeles.backpage.com/online/api/Section.xml
+            NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:@"category"];
+            NSString * sectionId = [sectionDic objectForKeyedSubscript:@"sectionId"];
+            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
+            NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
+            NSString * api = [NSString stringWithFormat:@"%@Category.xml?Section=%@",cityurl,sectionId];
+            [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:api andParams:nil completion:^(NSMutableDictionary * result) {
+                NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
+                NSError * error;
+                NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
+                NSMutableArray * categories = [[[document objectForKeyedSubscript:@"rss"] objectForKey:@"channel"] objectForKey:@"item"];
+                for(NSMutableDictionary * category in categories){
+                    NSLog(@"%@",category);
+                    /*
+                    NSString * SectionId = [[[Section objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * SectionName = [[[Section objectForKeyedSubscript:@"bp:Name"] objectForKeyedSubscript:@"bp:Name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * SectionPosition = [[[Section objectForKeyedSubscript:@"bp:Position"] objectForKeyedSubscript:@"bp:Position"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionKey = [[[Section objectForKeyedSubscript:@"bp:SectionKey"] objectForKeyedSubscript:@"bp:SectionKey"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionShortName = [[[Section objectForKeyedSubscript:@"bp:ShortName"] objectForKeyedSubscript:@"bp:ShortName"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    NSString * sectionUrl = [[[Section objectForKeyedSubscript:@"bp:URL"] objectForKeyedSubscript:@"bp:URL"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    
+                    NSString * query = [NSString stringWithFormat:@"select * from section where sectionid = '%@'",SectionId];
+                    NSArray * cat = [[DBManager sharedInstance] loadDataFromDB:query];
+                    if(cat && cat.count > 0){
+                        continue;
+                    }
+                    query = [NSString stringWithFormat:@"insert into section values(%@,'%@','%@','%@','%@','%@','%@')",nil,[SectionId urlEncode],[SectionName urlEncode],[SectionPosition urlEncode],[sectionKey urlEncode],[sectionShortName urlEncode],[sectionUrl urlEncode]];
+                    [[DBManager sharedInstance] executeQuery:query];
+                    */
+                }
+            }];
+        }
             break;
         default:
             break;
     }
+    
+    [[AppDelegate shared].currentSelectionDic setObject:item forKeyedSubscript:[NSNumber numberWithInt:menuItem]];
+    [[NSUserDefaults standardUserDefaults] setObject:[AppDelegate shared].currentSelectionDic forKey:@"currentSelectionDic"];
     [mainViewTable reloadData];
 }
 
@@ -286,6 +349,9 @@
             cell.textLabel.text = NSLocalizedString(@"Section", nil);
             if([[tableData objectForKeyedSubscript:@"section"] isKindOfClass:[NSString class]]){
                 cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"section"];
+                if([[tableData objectForKeyedSubscript:@"city"] isKindOfClass:[NSString class]] == NO){
+                    [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+                }
             }
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"section"];
@@ -297,6 +363,9 @@
             cell.textLabel.text = NSLocalizedString(@"Category", nil);
             if([[tableData objectForKeyedSubscript:@"category"] isKindOfClass:[NSString class]]){
                 cell.detailTextLabel.text = [tableData objectForKeyedSubscript:@"category"];
+                if([[tableData objectForKeyedSubscript:@"section"] isKindOfClass:[NSString class]] == NO){
+                    [cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+                }
             }
             else{
                 NSMutableDictionary * item = [tableData objectForKeyedSubscript:@"category"];
