@@ -67,7 +67,8 @@ class ItemTableViewController: UITableViewController {
         }
         else if(itemType == MENU_CITY){
             listofItems = [NSMutableArray]()
-            let query:String = String(format: "select * from cities where statecode = '%@'",AppDelegate.shared().currentSelectionDic.objectForKey("state") as! String)
+            let item:NSMutableDictionary = AppDelegate.shared().currentSelectionDic.objectForKey("state") as! NSMutableDictionary
+            let query:String = String(format: "select * from cities where statecode = '%@'",item.objectForKey("iso") as! String)
             
             let cities = DBManager.sharedInstance().loadDataFromDB(query)
             for city in cities{
