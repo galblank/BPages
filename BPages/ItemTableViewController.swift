@@ -130,7 +130,6 @@ class ItemTableViewController: UITableViewController {
                 catch _ as NSError{
                     
                 }
-                
             }
         }
         
