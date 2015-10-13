@@ -10,7 +10,7 @@
 #import "definitions.h"
 #import "XmlHandler.h"
 #import "StringHelper.h"
-
+#import "NSArrayExtension.h"
 @interface ViewController ()
 
 @end
@@ -244,7 +244,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     
-    return 5;
+    return 6;
     
 }
 
@@ -258,16 +258,64 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell.selectionStyle == UITableViewCellSelectionStyleNone) {
-        return;
-    }
-    
     if(newItemVC == nil){
         newItemVC = [[ItemTableViewController alloc] init];
         newItemVC.delegate = self;
     }
     newItemVC.itemType = (MENU_TYPES)(indexPath.row);
+    if(indexPath.row == MENU_SUBMIT){
+        NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_SECTION]];
+        NSString * sectionId = [sectionDic objectForKeyedSubscript:@"sectionId"];
+        NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_CITY]];
+        NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
+        NSMutableDictionary * category = [tableData objectForKey:[NSNumber numberWithInt:MENU_CATEGORY]];
+        NSString * catId = [category objectForKey:@"catId"];
+        //http://losangeles.backpage.com/online/api/Search.xml?Section=4378&Max=25&StartIndex=0&Category=4345
+        NSString * api = [NSString stringWithFormat:@"Search.xml?Section=%@&Max=200$StartIndex=0&Category=%@",sectionId,catId];
+        [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:api andParams:nil completion:^(NSMutableDictionary * result) {
+            NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
+            NSError * error;
+            NSMutableDictionary * document = [[XmlHandler dictionaryNSXmlParseObject:parser error:error] mutableCopy];
+            NSMutableArray * ads = [[[document objectForKeyedSubscript:@"rss"] objectForKey:@"channel"] objectForKey:@"item"];
+            for(NSMutableDictionary * ad in ads){
+                NSLog(@"%@",ad);
+                
+                 NSString * description = [[[ad objectForKeyedSubscript:@"bp:Ad"] objectForKeyedSubscript:@"bp:Ad"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                 NSString * catId = [[[ad objectForKeyedSubscript:@"bp:Category"] objectForKeyedSubscript:@"bp:Category"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                 NSString * adId = [[[ad objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                
+                NSMutableArray * images = [[ad objectForKeyedSubscript:@"bp:Image"] objectForKeyedSubscript:@"bp:Image"];
+                NSMutableArray * arrayOfImages = [[NSMutableArray alloc] init];
+                for(NSMutableDictionary * imageDic in images){
+                    NSString * imageUrl = [[imageDic objectForKeyedSubscript:@"bp:Image"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                    [arrayOfImages addObject:imageUrl];
+                }
+                
+                 NSString * postingTime = [[[ad objectForKeyedSubscript:@"bp:PostingTime"] objectForKeyedSubscript:@"bp:PostingTime"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                
+                 NSString * region = [[[ad objectForKeyedSubscript:@"bp:Region"] objectForKeyedSubscript:@"bp:Region"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                
+                NSString * sectionId = [[[ad objectForKeyedSubscript:@"bp:Section"] objectForKeyedSubscript:@"bp:Section"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                
+                NSString * adTitle = [[[ad objectForKeyedSubscript:@"bp:Title"] objectForKeyedSubscript:@"bp:Title"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                 
+                 NSString * query = [NSString stringWithFormat:@"select * from ad where adId = '%@'",adId];
+                 NSArray * add = [[DBManager sharedInstance] loadDataFromDB:query];
+                 if(add && add.count > 0){
+                     continue;
+                 }
+                 query = [NSString stringWithFormat:@"insert into ad values(%@,'%@','%@','%@','%@','%@','%@','%@','%@')",nil,[description urlEncode],[catId urlEncode],[adId urlEncode],[[arrayOfImages json] urlEncode],[postingTime urlEncode],[region urlEncode],[sectionId urlEncode],[adTitle urlEncode]];
+                 [[DBManager sharedInstance] executeQuery:query];
+                
+            }
+            
+            [self.navigationController pushViewController:newItemVC animated:YES];
+            [newItemVC updateItemsForMenuType];
+        }];
+        return;
+    }
+    
+    
     [self.navigationController pushViewController:newItemVC animated:YES];
     [newItemVC updateItemsForMenuType];
 }
@@ -318,6 +366,10 @@
         case MENU_CATEGORY:
             cell.textLabel.text = NSLocalizedString(@"Category", nil);
             break;
+        case MENU_SUBMIT:
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
+            cell.textLabel.textColor = [UIColor grayColor];
+            cell.textLabel.text = NSLocalizedString(@"SEARCH", nil);
         default:
             break;
     }

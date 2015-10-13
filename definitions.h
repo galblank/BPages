@@ -35,7 +35,8 @@ typedef enum{
     MENU_STATE,
     MENU_CITY,
     MENU_SECTION,
-    MENU_CATEGORY
+    MENU_CATEGORY,
+    MENU_SUBMIT
 }MENU_TYPES;
 
 #define ROOT_IMAGES @"http://www.missingkids.com/photographs/"

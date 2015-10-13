@@ -103,6 +103,7 @@
 		091B5F521BC54D6000A7F033 /* bpages.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = bpages.sqlite; sourceTree = SOURCE_ROOT; };
 		091B5F541BC6A45300A7F033 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		091B5F581BC6E2C300A7F033 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
+		0991BA3F1BCD43FF000E9823 /* NSArrayExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NSArrayExtension.h; path = Helpers/NSArrayExtension.h; sourceTree = "<group>"; };
 		09ECFD3C1BC31FEC00E87FBA /* BPages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BPages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ECFD401BC31FEC00E87FBA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		09ECFD421BC31FEC00E87FBA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -281,6 +282,7 @@
 				09ECFD3F1BC31FEC00E87FBA /* Supporting Files */,
 				091B5F541BC6A45300A7F033 /* MenuViewController.swift */,
 				091B5F581BC6E2C300A7F033 /* StringExtension.swift */,
+				0991BA3F1BCD43FF000E9823 /* NSArrayExtension.h */,
 			);
 			path = BPages;
 			sourceTree = "<group>";

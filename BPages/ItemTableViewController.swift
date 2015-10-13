@@ -105,6 +105,35 @@ class ItemTableViewController: UITableViewController {
                 listofItems.append(dicSection)
             }
         }
+        else if(itemType == MENU_SUBMIT)
+        {
+            let nSectionItem:NSNumber = NSNumber(unsignedInt: MENU_SECTION.rawValue)
+            let sectionitem = AppDelegate.shared().currentSelectionDic.objectForKey(nSectionItem) as! NSDictionary
+            
+            let ncatItem:NSNumber = NSNumber(unsignedInt: MENU_CATEGORY.rawValue)
+            let catitem = AppDelegate.shared().currentSelectionDic.objectForKey(ncatItem) as! NSDictionary
+            
+            let query:String = String(format: "select * from ad where sectionId = '%@' and catId = '%@' order by ",sectionitem.objectForKey("sectionId") as! String,catitem.objectForKey("catId") as! String)
+            
+            let ads = DBManager.sharedInstance().loadDataFromDB(query) as NSMutableArray
+            listofItems = [NSMutableArray]()
+            for ad in ads{
+                let adTitle = (ad[8] as! String).urlDecode() as String
+                let adId = (ad[3] as! String).urlDecode() as String
+                let adImages = (ad[4] as! String).urlDecode() as String
+                let data = adImages.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)
+                do{
+                let arrayOfImages: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
+                    let dicOneAd = ["title":adTitle,"adId":adId,"images":arrayOfImages]
+                    listofItems.append(dicOneAd)
+                }
+                catch _ as NSError{
+                    
+                }
+                
+            }
+        }
+        
         for item:AnyObject in listofItems{
             let cName:String = item.objectForKey("name") as! String
             let firstLetter:String = cName[0]
