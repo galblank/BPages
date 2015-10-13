@@ -187,7 +187,7 @@
     }
     
     if([[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:[NSNumber numberWithInt:MENU_STATE]]){
-        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:[NSNumber numberWithInt:MENU_STATE]] forKeyedSubscript:@"state"];
+        [tableData setObject:[[AppDelegate shared].currentSelectionDic objectForKeyedSubscript:[NSNumber numberWithInt:MENU_STATE]] forKeyedSubscript:[NSNumber numberWithInt:MENU_STATE]];
     }
     else{
         [tableData setObject:item forKeyedSubscript:[NSNumber numberWithInt:MENU_STATE]];
@@ -299,15 +299,11 @@
         [cell.detailTextLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Medium" size:16.0]];
     }
     
-    cell.userInteractionEnabled = NO;
     NSMutableDictionary * item = [tableData objectForKeyedSubscript:[NSNumber numberWithInteger:indexPath.row]];
     cell.detailTextLabel.text = [item objectForKeyedSubscript:@"name"];
-    if([cell.detailTextLabel.text caseInsensitiveCompare:NSLocalizedString(@"None", nil)] != NSOrderedSame){
-        cell.userInteractionEnabled = YES;
-    }
+
     switch (indexPath.row) {
         case MENU_COUNTRY:
-            cell.userInteractionEnabled = YES;
             cell.textLabel.text = NSLocalizedString(@"Country", nil);
             break;
         case MENU_STATE:

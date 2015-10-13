@@ -67,7 +67,9 @@ class ItemTableViewController: UITableViewController {
         }
         else if(itemType == MENU_CITY){
             listofItems = [NSMutableArray]()
-            let item:NSMutableDictionary = AppDelegate.shared().currentSelectionDic.objectForKey("state") as! NSMutableDictionary
+            let nItem:NSNumber = NSNumber(unsignedInt: MENU_STATE.rawValue)
+            print(AppDelegate.shared().currentSelectionDic)
+            let item = AppDelegate.shared().currentSelectionDic.objectForKey(nItem) as! NSDictionary
             let query:String = String(format: "select * from cities where statecode = '%@'",item.objectForKey("iso") as! String)
             
             let cities = DBManager.sharedInstance().loadDataFromDB(query)
@@ -91,7 +93,9 @@ class ItemTableViewController: UITableViewController {
         }
         else if(itemType == MENU_CATEGORY)
         {
-            let query:String = String(format: "select * from category where sectionId = '%@'",AppDelegate.shared().currentSelectionDic.objectForKey("sectionId") as! String)
+            let nItem:NSNumber = NSNumber(unsignedInt: MENU_SECTION.rawValue)
+            let item = AppDelegate.shared().currentSelectionDic.objectForKey(nItem) as! NSDictionary
+            let query:String = String(format: "select * from category where sectionId = '%@'",item.objectForKey("sectionId") as! String)
             let sections = DBManager.sharedInstance().loadDataFromDB(query) as NSMutableArray
             listofItems = [NSMutableArray]()
             for section in sections{
