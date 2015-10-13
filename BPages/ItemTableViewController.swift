@@ -26,9 +26,8 @@ class ItemTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         AppDelegate.shared().changeMenuButton();
+        
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
-        
-        
     }
     
     func updateItemsForMenuType()

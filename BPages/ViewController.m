@@ -284,12 +284,19 @@
                  NSString * catId = [[[ad objectForKeyedSubscript:@"bp:Category"] objectForKeyedSubscript:@"bp:Category"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                  NSString * adId = [[[ad objectForKeyedSubscript:@"bp:Id"] objectForKeyedSubscript:@"bp:Id"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                 
-                NSMutableArray * images = [[ad objectForKeyedSubscript:@"bp:Image"] objectForKeyedSubscript:@"bp:Image"];
                 NSMutableArray * arrayOfImages = [[NSMutableArray alloc] init];
-                for(NSMutableDictionary * imageDic in images){
-                    NSString * imageUrl = [[imageDic objectForKeyedSubscript:@"bp:Image"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                if([[ad objectForKeyedSubscript:@"bp:Image"] isKindOfClass:[NSMutableArray class]]){
+                    NSMutableArray * images = [ad objectForKeyedSubscript:@"bp:Image"];
+                    for(NSMutableDictionary * imageDic in images){
+                        NSString * imageUrl = [[imageDic objectForKeyedSubscript:@"bp:Image"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                        [arrayOfImages addObject:imageUrl];
+                    }
+                }
+                else if([[ad objectForKeyedSubscript:@"bp:Image"] isKindOfClass:[NSMutableDictionary class]]){
+                    NSString * imageUrl = [[[ad objectForKeyedSubscript:@"bp:Image"] objectForKey:@"bp:Image"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                     [arrayOfImages addObject:imageUrl];
                 }
+               
                 
                  NSString * postingTime = [[[ad objectForKeyedSubscript:@"bp:PostingTime"] objectForKeyedSubscript:@"bp:PostingTime"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                 
@@ -300,11 +307,13 @@
                 NSString * adTitle = [[[ad objectForKeyedSubscript:@"bp:Title"] objectForKeyedSubscript:@"bp:Title"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                  
                  NSString * query = [NSString stringWithFormat:@"select * from ad where adId = '%@'",adId];
+                NSLog(@"AD:%@",query);
                  NSArray * add = [[DBManager sharedInstance] loadDataFromDB:query];
                  if(add && add.count > 0){
                      continue;
                  }
                  query = [NSString stringWithFormat:@"insert into ad values(%@,'%@','%@','%@','%@','%@','%@','%@','%@')",nil,[description urlEncode],[catId urlEncode],[adId urlEncode],[[arrayOfImages json] urlEncode],[postingTime urlEncode],[region urlEncode],[sectionId urlEncode],[adTitle urlEncode]];
+                NSLog(@"AD:%@",query);
                  [[DBManager sharedInstance] executeQuery:query];
                 
             }
