@@ -112,7 +112,7 @@ class ItemTableViewController: UITableViewController {
             let ncatItem:NSNumber = NSNumber(unsignedInt: MENU_CATEGORY.rawValue)
             let catitem = AppDelegate.shared().currentSelectionDic.objectForKey(ncatItem) as! NSDictionary
             
-            let query:String = String(format: "select * from ad where sectionId = '%@' and catId = '%@' order by ",sectionitem.objectForKey("sectionId") as! String,catitem.objectForKey("catId") as! String)
+            let query:String = String(format: "select * from ad where sectionId = '%@' and catId = '%@'",sectionitem.objectForKey("sectionId") as! String,catitem.objectForKey("catId") as! String)
             
             let ads = DBManager.sharedInstance().loadDataFromDB(query) as NSMutableArray
             listofItems = [NSMutableArray]()
