@@ -12,17 +12,21 @@ class CollectionViewCell: UICollectionViewCell {
     
     var textLabel: UILabel!
     var imageView: UIImageView!
+    var scrollView: UIScrollView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = UIColor.whiteColor()
+        scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height))
+        scrollView.backgroundColor = UIColor.whiteColor()
+        contentView.addSubview(scrollView)
         
-        imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: frame.size.height*2/3))
-        imageView.contentMode = UIViewContentMode.ScaleAspectFit
-        contentView.addSubview(imageView)
-        
-        textLabel = UILabel(frame: CGRect(x: 0, y: imageView.frame.size.height, width: frame.size.width, height: frame.size.height/3))
-        textLabel.font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
+        textLabel = UILabel(frame: CGRect(x: 0, y:(imageView.frame.size.height - 50.0), width: frame.size.width, height:50.0))
+        textLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14)
+        textLabel.textColor = UIColor.whiteColor()
+        textLabel.alpha = 0.8
         textLabel.textAlignment = .Center
+        textLabel.backgroundColor = UIColor.blackColor()
         contentView.addSubview(textLabel)
     }
 

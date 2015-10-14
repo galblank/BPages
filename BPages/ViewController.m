@@ -24,7 +24,7 @@
     switch (menuItem) {
         case MENU_COUNTRY:
         {
-            NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:@"country"];
+            NSMutableDictionary * countryDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_COUNTRY]];
             NSString * country = [countryDic objectForKeyedSubscript:@"alpha2Code"];
             
             NSString * api = [NSString stringWithFormat:@"Site.xml?CountryCode=%@",country];
@@ -67,7 +67,7 @@
         {
            
             //http://losangeles.backpage.com/online/api/Section.xml
-            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
+            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_CITY]];
             NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
             [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:@"Section.xml" andParams:nil completion:^(NSMutableDictionary * result) {
                 NSXMLParser * parser = [result objectForKeyedSubscript:@"result"];
@@ -97,9 +97,9 @@
         case MENU_SECTION:
         {
             //http://losangeles.backpage.com/online/api/Section.xml
-            NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:@"section"];
+            NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_SECTION]];
             NSString * sectionId = [sectionDic objectForKeyedSubscript:@"sectionId"];
-            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
+            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_CITY]];
             NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
             NSString * api = [NSString stringWithFormat:@"Category.xml?Section=%@",sectionId];
             [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:api andParams:nil completion:^(NSMutableDictionary * result) {
@@ -130,11 +130,10 @@
             break;
         case MENU_CATEGORY:
         {
-
             //http://losangeles.backpage.com/online/api/Section.xml
-            NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:@"category"];
+            NSMutableDictionary * sectionDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_CATEGORY]];
             NSString * sectionId = [sectionDic objectForKeyedSubscript:@"sectionId"];
-            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:@"city"];
+            NSMutableDictionary * cityDic = [tableData objectForKeyedSubscript:[NSNumber numberWithInt:MENU_CITY]];
             NSString * cityurl = [cityDic objectForKeyedSubscript:@"url"];
             NSString * api = [NSString stringWithFormat:@"%@Category.xml?Section=%@",cityurl,sectionId];
             [[CommManager sharedInstance] getAPIBlockWithPrefix:cityurl andApi:api andParams:nil completion:^(NSMutableDictionary * result) {

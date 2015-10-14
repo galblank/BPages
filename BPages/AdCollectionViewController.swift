@@ -19,7 +19,6 @@ class AdCollectionViewController: UICollectionViewController {
     var listofItems: [AnyObject]!
     
     var sortedKeys =  Dictionary<String, [AnyObject]>()
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,9 +98,15 @@ class AdCollectionViewController: UICollectionViewController {
         let item = listofItems[indexPath.row] as! NSDictionary
         let imagesarray:NSMutableArray = item.objectForKey("images") as! NSMutableArray
         if(imagesarray.count > 0){
-            let imageurl:String = imagesarray[0] as! String
-            let url = NSURL(string: imageurl)
-            cell.imageView.setImageWithURL(url!, placeholderImage: UIImage(contentsOfFile: "profile"))
+            var x:CGFloat = 0
+            for imageurl in imagesarray{
+                let url = NSURL(string: imageurl as! String)
+                let imageView:UIImageView = UIImageView(frame: CGRectMake(x, 0, cell.frame.size.width, cell.frame.size.height))
+                imageView.setImageWithURL(url!, placeholderImage: UIImage(contentsOfFile: "profile"))
+                cell.scrollView.addSubview(imageView)
+                x += cell.frame.size.width
+            }
+            cell.scrollView.contentSize = CGSizeMake(x, cell.frame.size.height)
         }
     
         return cell
