@@ -21,12 +21,14 @@ class CollectionViewCell: UICollectionViewCell {
         scrollView.backgroundColor = UIColor.whiteColor()
         contentView.addSubview(scrollView)
         
-        textLabel = UILabel(frame: CGRect(x: 0, y:(imageView.frame.size.height - 50.0), width: frame.size.width, height:50.0))
+        textLabel = UILabel(frame: CGRect(x: 0, y:(frame.size.height - 50.0), width: frame.size.width, height:50.0))
         textLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14)
         textLabel.textColor = UIColor.whiteColor()
         textLabel.alpha = 0.8
+        textLabel.numberOfLines = 0
         textLabel.textAlignment = .Center
         textLabel.backgroundColor = UIColor.blackColor()
+        textLabel.text = "hasjdfkads kfajskdfjkasdhf"
         contentView.addSubview(textLabel)
     }
 
