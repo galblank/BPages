@@ -19,6 +19,8 @@
 		091B5F531BC54D6000A7F033 /* bpages.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 091B5F521BC54D6000A7F033 /* bpages.sqlite */; settings = {ASSET_TAGS = (); }; };
 		091B5F551BC6A45300A7F033 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F541BC6A45300A7F033 /* MenuViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		091B5F591BC6E2C300A7F033 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F581BC6E2C300A7F033 /* StringExtension.swift */; settings = {ASSET_TAGS = (); }; };
+		0991BA431BCD9C8B000E9823 /* AdCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA421BCD9C8B000E9823 /* AdCollectionViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		0991BA451BCDD9D0000E9823 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA441BCDD9D0000E9823 /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
 		09ECFD411BC31FEC00E87FBA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD401BC31FEC00E87FBA /* main.m */; };
 		09ECFD441BC31FEC00E87FBA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD431BC31FEC00E87FBA /* AppDelegate.m */; };
 		09ECFD471BC31FEC00E87FBA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD461BC31FEC00E87FBA /* ViewController.m */; };
@@ -104,6 +106,8 @@
 		091B5F541BC6A45300A7F033 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		091B5F581BC6E2C300A7F033 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		0991BA3F1BCD43FF000E9823 /* NSArrayExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NSArrayExtension.h; path = Helpers/NSArrayExtension.h; sourceTree = "<group>"; };
+		0991BA421BCD9C8B000E9823 /* AdCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdCollectionViewController.swift; sourceTree = "<group>"; };
+		0991BA441BCDD9D0000E9823 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		09ECFD3C1BC31FEC00E87FBA /* BPages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BPages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ECFD401BC31FEC00E87FBA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		09ECFD421BC31FEC00E87FBA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -283,6 +287,8 @@
 				091B5F541BC6A45300A7F033 /* MenuViewController.swift */,
 				091B5F581BC6E2C300A7F033 /* StringExtension.swift */,
 				0991BA3F1BCD43FF000E9823 /* NSArrayExtension.h */,
+				0991BA421BCD9C8B000E9823 /* AdCollectionViewController.swift */,
+				0991BA441BCDD9D0000E9823 /* CollectionViewCell.swift */,
 			);
 			path = BPages;
 			sourceTree = "<group>";
@@ -585,6 +591,7 @@
 				09ECFD471BC31FEC00E87FBA /* ViewController.m in Sources */,
 				09ECFEA51BC32E3D00E87FBA /* WYPopoverController.m in Sources */,
 				091B5F551BC6A45300A7F033 /* MenuViewController.swift in Sources */,
+				0991BA431BCD9C8B000E9823 /* AdCollectionViewController.swift in Sources */,
 				09ECFE941BC32E3D00E87FBA /* AFContact.m in Sources */,
 				09ECFE821BC32E3D00E87FBA /* AFSecurityPolicy.m in Sources */,
 				09ECFE8B1BC32E3D00E87FBA /* UIButton+AFNetworking.m in Sources */,
@@ -609,6 +616,7 @@
 				09ECFEA11BC32E3D00E87FBA /* UIImage+Alpha.m in Sources */,
 				09ECFE841BC32E3D00E87FBA /* AFURLRequestSerialization.m in Sources */,
 				09ECFE8C1BC32E3D00E87FBA /* UIImageView+AFNetworking.m in Sources */,
+				0991BA451BCDD9D0000E9823 /* CollectionViewCell.swift in Sources */,
 				09ECFE991BC32E3D00E87FBA /* InsetTextField.m in Sources */,
 				09ECFE801BC32E3D00E87FBA /* AFHTTPSessionManager.m in Sources */,
 				09ECFEA21BC32E3D00E87FBA /* UIImage+Resize.m in Sources */,

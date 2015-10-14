@@ -7,3 +7,4 @@
 #import "DBManager.h"
 #import "AppDelegate.h"
 #import "StringHelper.h"
+#import "UIImageView+AFNetworking.h"

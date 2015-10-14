@@ -11,6 +11,7 @@
 #import "XmlHandler.h"
 #import "StringHelper.h"
 #import "NSArrayExtension.h"
+
 @interface ViewController ()
 
 @end
@@ -318,8 +319,11 @@
                 
             }
             
-            [self.navigationController pushViewController:newItemVC animated:YES];
-            [newItemVC updateItemsForMenuType];
+            UICollectionViewFlowLayout* flowLayout = [[UICollectionViewFlowLayout alloc] init];
+            flowLayout.itemSize = CGSizeMake(self.view.frame.size.width / 2 - 10, self.view.frame.size.height / 3);
+            [flowLayout setScrollDirection:UICollectionViewScrollDirectionVertical];
+            AdCollectionViewController * adVC = [[AdCollectionViewController alloc] initWithCollectionViewLayout:flowLayout];
+            [self.navigationController pushViewController:adVC animated:YES];
         }];
         return;
     }
