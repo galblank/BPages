@@ -22,7 +22,7 @@ class AdCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.view.backgroundColor = UIColor.whiteColor()
         let nSectionItem:NSNumber = NSNumber(unsignedInt: MENU_SECTION.rawValue)
         let sectionitem = AppDelegate.shared().currentSelectionDic.objectForKey(nSectionItem) as! NSDictionary
         
@@ -90,6 +90,13 @@ class AdCollectionViewController: UICollectionViewController {
         sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
             return CGSize(width: 80, height: 100)
     }*/
+    
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let item = listofItems[indexPath.row] as! NSDictionary
+        let adVC:AdViewController = AdViewController()
+        adVC.adDic = item as! NSMutableDictionary
+        self.navigationController?.pushViewController(adVC, animated: true)
+    }
 
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> CollectionViewCell {
         let cell:CollectionViewCell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! CollectionViewCell

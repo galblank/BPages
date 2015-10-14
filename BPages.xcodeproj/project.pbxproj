@@ -21,6 +21,7 @@
 		091B5F591BC6E2C300A7F033 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B5F581BC6E2C300A7F033 /* StringExtension.swift */; settings = {ASSET_TAGS = (); }; };
 		0991BA431BCD9C8B000E9823 /* AdCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA421BCD9C8B000E9823 /* AdCollectionViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		0991BA451BCDD9D0000E9823 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA441BCDD9D0000E9823 /* CollectionViewCell.swift */; settings = {ASSET_TAGS = (); }; };
+		0991BA471BCEFE85000E9823 /* AdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0991BA461BCEFE85000E9823 /* AdViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		09ECFD411BC31FEC00E87FBA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD401BC31FEC00E87FBA /* main.m */; };
 		09ECFD441BC31FEC00E87FBA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD431BC31FEC00E87FBA /* AppDelegate.m */; };
 		09ECFD471BC31FEC00E87FBA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ECFD461BC31FEC00E87FBA /* ViewController.m */; };
@@ -108,6 +109,7 @@
 		0991BA3F1BCD43FF000E9823 /* NSArrayExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NSArrayExtension.h; path = Helpers/NSArrayExtension.h; sourceTree = "<group>"; };
 		0991BA421BCD9C8B000E9823 /* AdCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdCollectionViewController.swift; sourceTree = "<group>"; };
 		0991BA441BCDD9D0000E9823 /* CollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		0991BA461BCEFE85000E9823 /* AdViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdViewController.swift; sourceTree = "<group>"; };
 		09ECFD3C1BC31FEC00E87FBA /* BPages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BPages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ECFD401BC31FEC00E87FBA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		09ECFD421BC31FEC00E87FBA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 				0991BA3F1BCD43FF000E9823 /* NSArrayExtension.h */,
 				0991BA421BCD9C8B000E9823 /* AdCollectionViewController.swift */,
 				0991BA441BCDD9D0000E9823 /* CollectionViewCell.swift */,
+				0991BA461BCEFE85000E9823 /* AdViewController.swift */,
 			);
 			path = BPages;
 			sourceTree = "<group>";
@@ -592,6 +595,7 @@
 				09ECFEA51BC32E3D00E87FBA /* WYPopoverController.m in Sources */,
 				091B5F551BC6A45300A7F033 /* MenuViewController.swift in Sources */,
 				0991BA431BCD9C8B000E9823 /* AdCollectionViewController.swift in Sources */,
+				0991BA471BCEFE85000E9823 /* AdViewController.swift in Sources */,
 				09ECFE941BC32E3D00E87FBA /* AFContact.m in Sources */,
 				09ECFE821BC32E3D00E87FBA /* AFSecurityPolicy.m in Sources */,
 				09ECFE8B1BC32E3D00E87FBA /* UIButton+AFNetworking.m in Sources */,
