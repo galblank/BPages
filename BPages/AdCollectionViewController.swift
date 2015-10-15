@@ -55,7 +55,7 @@ class AdCollectionViewController: UICollectionViewController {
         // Register cell classes
         self.collectionView!.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
-        // Do any additional setup after loading the view.
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "cellTapped:", name: "SCROLLCELLTAPPED", object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -91,11 +91,18 @@ class AdCollectionViewController: UICollectionViewController {
             return CGSize(width: 80, height: 100)
     }*/
     
-    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func cellTapped(noti:NSNotification){
+        let dic = noti.userInfo as! NSDictionary
+        let indexPath:NSIndexPath = dic.objectForKey("index") as! NSIndexPath
         let item = listofItems[indexPath.row] as! NSDictionary
         let adVC:AdViewController = AdViewController()
-        adVC.adDic = item as! NSMutableDictionary
+        adVC.adDic = item.mutableCopy() as! NSMutableDictionary
         self.navigationController?.pushViewController(adVC, animated: true)
+        
+    }
+    
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
     }
 
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> CollectionViewCell {
@@ -104,6 +111,7 @@ class AdCollectionViewController: UICollectionViewController {
         // Configure the cell
         let item = listofItems[indexPath.row] as! NSDictionary
         let imagesarray:NSMutableArray = item.objectForKey("images") as! NSMutableArray
+        cell.indexPath = indexPath
         if(imagesarray.count > 0){
             var x:CGFloat = 0
             for imageurl in imagesarray{
@@ -113,6 +121,7 @@ class AdCollectionViewController: UICollectionViewController {
                 cell.scrollView.addSubview(imageView)
                 x += cell.frame.size.width
             }
+          
             cell.scrollView.contentSize = CGSizeMake(x, cell.frame.size.height)
         }
     

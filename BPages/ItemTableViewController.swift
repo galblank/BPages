@@ -12,7 +12,7 @@ import UIKit
     func selectedItem(item:[String:AnyObject],menuItem:MENU_TYPES)
 }
 
-class ItemTableViewController: UITableViewController {
+class ItemTableViewController: UITableViewController,UISearchBarDelegate {
 
     var itemType:MENU_TYPES = MENU_COUNTRY
     
@@ -22,12 +22,61 @@ class ItemTableViewController: UITableViewController {
 
     var sortedKeys =  Dictionary<String, [AnyObject]>()
 
+    var searchBar: UISearchBar!
+    
+    var searchActive: Bool!
+    
+    var filtered:[String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         AppDelegate.shared().changeMenuButton();
-        
+        searchBar = UISearchBar(frame: CGRectMake(0, 0, self.tableView.frame.size.width, 40))
+        searchBar.delegate = self
+        tableView.tableHeaderView = searchBar
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
+    }
+    
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        searchActive = true;
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+        /*let oneKey = sortedNames[indexPath.section]
+        
+        let items = sortedKeys[oneKey] as Array!
+        let item = items[indexPath.row]
+        cell.textLabel?.text = item.objectForKey("name") as! String*/
+        
+        /*filtered = item.objectForKey("name").filter({ (text) -> Bool in
+            let tmp: NSString = text
+            let range = tmp.rangeOfString(searchText, options: NSStringCompareOptions.CaseInsensitiveSearch)
+            return range.location != NSNotFound
+        })
+        if(filtered.count == 0){
+            searchActive = false;
+        } else {
+            searchActive = true;
+        }
+        self.tableView.reloadData()*/
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
     
     func updateItemsForMenuType()
@@ -147,13 +196,6 @@ class ItemTableViewController: UITableViewController {
         tableView.reloadData()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    // MARK: - Table view data source
-
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return sortedKeys.count
@@ -187,13 +229,18 @@ class ItemTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
-
-        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
-        let oneKey = sortedNames[indexPath.section]
+        //if(searchActive == true){
+        //    cell.textLabel?.text = filtered[indexPath.row]
+        //} else {
+            let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+            let oneKey = sortedNames[indexPath.section]
+            
+            let items = sortedKeys[oneKey] as Array!
+            let item = items[indexPath.row]
+            cell.textLabel?.text = item.objectForKey("name") as! String
+        //}
         
-        let items = sortedKeys[oneKey] as Array!
-        let item = items[indexPath.row]
-        cell.textLabel?.text = item.objectForKey("name") as! String
+        
         
         return cell
     }
