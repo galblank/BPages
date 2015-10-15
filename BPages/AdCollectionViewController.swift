@@ -115,9 +115,10 @@ class AdCollectionViewController: UICollectionViewController {
         if(imagesarray.count > 0){
             var x:CGFloat = 0
             for imageurl in imagesarray{
-                let url = NSURL(string: imageurl as! String)
+                let url = NSURL(string: imageurl as! String)    
                 let imageView:UIImageView = UIImageView(frame: CGRectMake(x, 0, cell.frame.size.width, cell.frame.size.height))
                 imageView.setImageWithURL(url!, placeholderImage: UIImage(contentsOfFile: "profile"))
+                imageView.contentMode = UIViewContentMode.ScaleAspectFill
                 cell.scrollView.addSubview(imageView)
                 x += cell.frame.size.width
             }

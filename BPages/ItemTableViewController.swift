@@ -13,25 +13,29 @@ import UIKit
 }
 
 class ItemTableViewController: UITableViewController,UISearchBarDelegate {
-
+    
     var itemType:MENU_TYPES = MENU_COUNTRY
+    
+    var is_searching:Bool! = false   // It's flag for searching
     
     var delegate:ItemDelegate?
     
     var listofItems: [AnyObject]!
-
-    var sortedKeys =  Dictionary<String, [AnyObject]>()
-
+    
+    var sortedKeys =  Dictionary<String,NSMutableArray>()
+    
     var searchBar: UISearchBar!
     
     var searchActive: Bool!
     
     var filtered:[String] = []
     
+    var searchingDataArray:NSMutableArray! = NSMutableArray()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         AppDelegate.shared().changeMenuButton();
-        searchBar = UISearchBar(frame: CGRectMake(0, 0, self.tableView.frame.size.width, 40))
+        searchBar = UISearchBar(frame: CGRectMake(0, 0, self.view.frame.size.width, 40))
         searchBar.delegate = self
         tableView.tableHeaderView = searchBar
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
@@ -54,24 +58,26 @@ class ItemTableViewController: UITableViewController,UISearchBarDelegate {
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
-        /*let oneKey = sortedNames[indexPath.section]
-        
-        let items = sortedKeys[oneKey] as Array!
-        let item = items[indexPath.row]
-        cell.textLabel?.text = item.objectForKey("name") as! String*/
-        
-        /*filtered = item.objectForKey("name").filter({ (text) -> Bool in
-            let tmp: NSString = text
-            let range = tmp.rangeOfString(searchText, options: NSStringCompareOptions.CaseInsensitiveSearch)
-            return range.location != NSNotFound
-        })
-        if(filtered.count == 0){
-            searchActive = false;
+        if searchBar.text!.isEmpty{
+            is_searching = false
         } else {
-            searchActive = true;
+            is_searching = true
+            searchingDataArray.removeAllObjects()
+            let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+            for oneKey in sortedNames{
+                let dataArray:NSMutableArray! = sortedKeys[oneKey]
+                for var index = 0; index < dataArray.count; index++
+                {
+                    let currentDic = dataArray.objectAtIndex(index) as! NSDictionary
+                    let item = currentDic.objectForKey("name") as! String
+                    if item.lowercaseString.rangeOfString(searchText.lowercaseString)  != nil {
+                        searchingDataArray.addObject(currentDic)
+                    }
+                }
+            }
         }
-        self.tableView.reloadData()*/
+        
+        self.tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -171,7 +177,7 @@ class ItemTableViewController: UITableViewController,UISearchBarDelegate {
                 let adImages = (ad[4] as! String).urlDecode() as String
                 let data = adImages.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)
                 do{
-                let arrayOfImages: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
+                    let arrayOfImages: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
                     let dicOneAd = ["title":adTitle,"adId":adId,"images":arrayOfImages]
                     listofItems.append(dicOneAd)
                 }
@@ -185,36 +191,43 @@ class ItemTableViewController: UITableViewController,UISearchBarDelegate {
             let cName:String = item.objectForKey("name") as! String
             let firstLetter:String = cName[0]
             
-            var countries:[AnyObject] = [AnyObject]()
+            var countries:NSMutableArray = NSMutableArray()
             if(sortedKeys[firstLetter] != nil){
                 countries = sortedKeys[firstLetter]!
             }
-            countries.append(item)
+            countries.addObject(item)
             sortedKeys[firstLetter] = countries
         }
         
         tableView.reloadData()
     }
-
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
+        if is_searching == true{
+            return 1
+        }
         return sortedKeys.count
     }
-
+    
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
-        let oneKey = sortedNames[section]
-        
-        let items = sortedKeys[oneKey] as AnyObject?
-        return items!.count
+        if is_searching == true{
+            return searchingDataArray.count
+        }else{
+            let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
+            let oneKey = sortedNames[section]
+            
+            let items = sortedKeys[oneKey] as AnyObject?
+            return items!.count
+        }
     }
     
     override func sectionIndexTitlesForTableView(tableView: UITableView) -> [String]? {
         let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
         return sortedNames
     }
-
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
@@ -229,66 +242,64 @@ class ItemTableViewController: UITableViewController,UISearchBarDelegate {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
-        //if(searchActive == true){
-        //    cell.textLabel?.text = filtered[indexPath.row]
-        //} else {
+        if(is_searching == true){
+            let item = searchingDataArray[indexPath.row]
+            cell.textLabel?.text = item.objectForKey("name") as! String
+        } else {
             let sortedNames = sortedKeys.keys.sort({ $0 < $1 })
             let oneKey = sortedNames[indexPath.section]
             
             let items = sortedKeys[oneKey] as Array!
             let item = items[indexPath.row]
-            cell.textLabel?.text = item.objectForKey("name") as! String
-        //}
-        
-        
-        
+            cell.textLabel!.text = item.objectForKey("name") as! String
+        }
         return cell
     }
     
-
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    // Return false if you do not want the specified item to be editable.
+    return true
     }
     */
-
+    
     /*
     // Override to support editing the table view.
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+    if editingStyle == .Delete {
+    // Delete the row from the data source
+    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+    } else if editingStyle == .Insert {
+    // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }
     }
     */
-
+    
     /*
     // Override to support rearranging the table view.
     override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
+    
     }
     */
-
+    
     /*
     // Override to support conditional rearranging of the table view.
     override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
+    // Return false if you do not want the item to be re-orderable.
+    return true
     }
     */
-
+    
     /*
     // MARK: - Navigation
-
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    // Get the new view controller using segue.destinationViewController.
+    // Pass the selected object to the new view controller.
     }
     */
-
+    
 }
